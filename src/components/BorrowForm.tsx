@@ -93,7 +93,7 @@ export const BorrowForm: React.FC = () => {
 
     setSubmitting(true);
     try {
-      await borrowDevice(formData.deviceName, formData.name, formData.email, formData.reason, formData.customReason);
+      await borrowDevice(formData.deviceName, formData.name, formData.email, formData.reason, formData.deviceType, formData.customReason);
       setSubmitted(true);
       setFormData({
         name: '',

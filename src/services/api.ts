@@ -32,30 +32,41 @@ export const fetchDevices = async (): Promise<Device[]> => {
   }
 };
 
-export const borrowDevice = async (deviceId: string, name: string, email: string, reason: string, customReason?: string): Promise<void> => {
+export const borrowDevice = async (deviceId: string, name: string, email: string, reason: string, deviceType: string, customReason?: string): Promise<Device> => {
   try {
     const finalReason = reason === 'others' ? customReason || '' : reason;
+    
+    // Debug logging
+    console.log('borrowDevice called with:', { deviceId, name, email, reason, deviceType, customReason });
+    
+    const requestBody = {
+      AssetID: deviceId,
+      DeviceType: deviceType,
+      Email: email,
+      Name: name,
+      Reason: finalReason
+    };
+    
+    console.log('Request body:', requestBody);
     
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
       },
       mode: 'cors',
       credentials: 'omit',
-      body: JSON.stringify({
-        AssetID: deviceId,
-        DeviceType: "", // This will be filled by the backend based on AssetID
-        Email: email,
-        Name: name,
-        Reason: finalReason
-      }),
+      body: JSON.stringify(requestBody),
     });
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
     }
+    
+    const data = await response.json();
+    console.log('Server response:', data);
+    return data;
   } catch (error) {
     console.error('Error borrowing device:', error);
     
